@@ -5,17 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.Controllers;
 
-/// <summary>
-/// The ProductsController is "thin". It doesn't contain business logic.
-/// It receives HTTP requests, calls the Services to do the actual work,
-/// and returns the appropriate View (HTML) or a Redirect.
-/// </summary>
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;
     private readonly IStockMovementService _stockMovementService;
 
-    // Both services are injected automatically by ASP.NET Core DI
     public ProductsController(IProductService productService, IStockMovementService stockMovementService)
     {
         _productService = productService;
@@ -23,7 +17,6 @@ public class ProductsController : Controller
     }
 
     // GET: /Products
-    // Allows searching via a query string: /Products?search=widget
     public async Task<IActionResult> Index([FromQuery] string? search, [FromQuery] int page = 1)
     {
         int pageSize = 10;
@@ -55,7 +48,6 @@ public class ProductsController : Controller
             SearchTerm = search
         };
 
-        // 3. Return View
         return View(pagedViewModel);
     }
 
@@ -71,14 +63,13 @@ public class ProductsController : Controller
         return Json(new { productId = id, sku = product.Sku, currentStock = stock });
     }
 
-    // GET: /Products/Details/5
     public async Task<IActionResult> Details(int id)
     {
         // 1. Get Product
         var product = await _productService.GetByIdAsync(id);
         if (product == null || !product.IsActive)
         {
-            return NotFound(); // Returns 404 page if product doesn't exist or is soft-deleted
+            return NotFound();
         }
 
         // 2. Build ViewModel with all required pieces (Product, Stock, History)
@@ -93,17 +84,14 @@ public class ProductsController : Controller
         return View(viewModel);
     }
 
-    // GET: /Products/AddEdit/5 (or /Products/AddEdit/0 for Create)
     public async Task<IActionResult> AddEdit(int id = 0)
     {
         if (id == 0)
         {
-            // Create mode: return empty form
             return View(new ProductFormViewModel());
         }
         else
         {
-            // Edit mode: fetch existing data
             var product = await _productService.GetByIdAsync(id);
             if (product == null || !product.IsActive)
             {
@@ -123,12 +111,10 @@ public class ProductsController : Controller
         }
     }
 
-    // POST: /Products/AddEdit
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddEdit(ProductFormViewModel viewModel)
     {
-        // 1. Basic Form Validation
         if (!ModelState.IsValid)
         {
             return Json(new { success = false, message = "Please ensure all fields are correct." });
@@ -174,7 +160,6 @@ public class ProductsController : Controller
         }
     }
 
-    // POST: /Products/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
@@ -192,7 +177,6 @@ public class ProductsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST: /Products/AddMovement
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddMovement([Bind(Prefix = "NewMovement")] MovementFormViewModel viewModel)

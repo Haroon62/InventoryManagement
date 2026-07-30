@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.Controllers;
 
-/// <summary>
-/// The HomeController handles the landing page (Dashboard) and global error display.
-/// </summary>
 public class HomeController : Controller
 {
     private readonly IProductService _productService;
@@ -21,9 +18,6 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    /// <summary>
-    /// Renders the Tiny Dashboard with aggregate stats.
-    /// </summary>
     public async Task<IActionResult> Index()
     {
         var products = await _productService.GetAllProductsAsync();
@@ -59,13 +53,22 @@ public class HomeController : Controller
         return View(viewModel);
     }
 
-    /// <summary>
-    /// Global Error Handler.
-    /// </summary>
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Error(int? statusCode = null)
     {
-        _logger.LogError("A global exception was caught.");
+        if (statusCode.HasValue)
+        {
+            if (statusCode == 404)
+            {
+                _logger.LogWarning("404 Error occurred.");
+            }
+            ViewData["StatusCode"] = statusCode.Value;
+        }
+        else
+        {
+            _logger.LogError("A global exception was caught.");
+        }
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

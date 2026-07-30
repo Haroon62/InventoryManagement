@@ -76,6 +76,12 @@
     <script>
         $(document).ready(function () {
             var $form = $('form[action*="AddEdit"]');
+            var $btn = $form.find('button[type="submit"]');
+
+            // When the button is clicked, add the class so Bootstrap styles the invalid fields BEFORE the browser halts submission
+            $btn.on('click', function () {
+                $form.addClass('was-validated');
+            });
             
             $form.on('submit', function (e) {
                 if (!this.checkValidity()) return;

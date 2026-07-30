@@ -156,11 +156,35 @@
     </div>
 </div>
 
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title" id="errorModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i> Error</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <p id="errorModalMessage" class="lead mb-0"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function () {
             var $form = $('form[action*="AddMovement"]');
+            var $btn = $form.find('button[type="submit"]');
+
+            // When the button is clicked, add the class so Bootstrap styles the invalid fields BEFORE the browser halts submission
+            $btn.on('click', function () {
+                $form.addClass('was-validated');
+            });
             
             $form.on('submit', function (e) {
                 // If native HTML validation fails, let the browser handle it
@@ -183,12 +207,14 @@
                             // This guarantees clicking "Back" will go to the Index page.
                             window.location.replace(window.location.href);
                         } else {
-                            alert(res.message || 'An error occurred.');
+                            $('#errorModalMessage').text(res.message || 'An error occurred.');
+                            $('#errorModal').modal('show');
                             $btn.prop('disabled', false).html(originalText);
                         }
                     },
                     error: function () {
-                        alert('A network error occurred.');
+                        $('#errorModalMessage').text('A network error occurred.');
+                        $('#errorModal').modal('show');
                         $btn.prop('disabled', false).html(originalText);
                     }
                 });
