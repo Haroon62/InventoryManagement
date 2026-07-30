@@ -1,4 +1,3 @@
-@using InventoryManagement.ViewModels
 @model ErrorViewModel
 @{
     ViewData["Title"] = "Error";
@@ -14,15 +13,24 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <p class="lead">We're sorry, but an unexpected error occurred while processing your request.</p>
-                    <p>Our team has been notified and we are looking into the issue.</p>
-                    
-                    @if (Model.ShowRequestId)
+                    @if (ViewData["StatusCode"] != null && (int)ViewData["StatusCode"] == 404)
                     {
-                        <hr />
-                        <p class="text-muted mb-0">
-                            <strong>Request ID:</strong> <code>@Model.RequestId</code>
-                        </p>
+                        <h4 class="text-danger mb-3">404 - Page Not Found</h4>
+                        <p class="lead">The page or resource you are looking for does not exist.</p>
+                        <p>It might have been moved or deleted. Please check the URL.</p>
+                    }
+                    else
+                    {
+                        <p class="lead">We're sorry, but an unexpected error occurred while processing your request.</p>
+                        <p>Our team has been notified and we are looking into the issue.</p>
+                        
+                        @if (Model.ShowRequestId)
+                        {
+                            <hr />
+                            <p class="text-muted mb-0">
+                                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                            </p>
+                        }
                     }
                     
                     <div class="mt-4">
