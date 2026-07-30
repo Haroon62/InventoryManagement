@@ -59,7 +59,16 @@ public class ProductsController : Controller
         return View(pagedViewModel);
     }
 
+    // GET: /api/stock/{id}
+    [HttpGet("/api/stock/{id}")]
+    public async Task<IActionResult> GetStockApi(int id)
+    {
+        var product = await _productService.GetByIdAsync(id);
+        if (product == null || !product.IsActive) return NotFound();
 
+        var stock = await _stockMovementService.GetCurrentStockAsync(id);
+        return Json(new { productId = id, sku = product.Sku, currentStock = stock });
+    }
 
     // GET: /Products/Details/5
     public async Task<IActionResult> Details(int id)
