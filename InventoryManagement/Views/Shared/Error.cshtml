@@ -1,0 +1,37 @@
+@using InventoryManagement.ViewModels
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Oops! Something went wrong.
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">We're sorry, but an unexpected error occurred while processing your request.</p>
+                    <p>Our team has been notified and we are looking into the issue.</p>
+                    
+                    @if (Model.ShowRequestId)
+                    {
+                        <hr />
+                        <p class="text-muted mb-0">
+                            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                        </p>
+                    }
+                    
+                    <div class="mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                            Return to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

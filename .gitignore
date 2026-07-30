@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/InventoryManagement/bin/Debug/net10.0
+/.vs/InventoryManagement.slnx
+/.vs/ProjectEvaluation
+/InventoryManagement/obj
+/InventoryManagement/Properties

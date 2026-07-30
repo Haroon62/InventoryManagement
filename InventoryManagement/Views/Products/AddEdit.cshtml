@@ -1,0 +1,66 @@
+@model InventoryManagement.ViewModels.ProductFormViewModel
+@{
+    bool isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Create Product" : "Edit Product";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a asp-action="Index" class="text-decoration-none text-muted mb-2 d-inline-block">
+            <i class="bi bi-arrow-left me-1"></i> Back to Products
+        </a>
+        <h1 class="h3 mb-0 text-gray-800">@(isCreate ? "Create New Product" : "Edit Product")</h1>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Make form full width by using col-12 -->
+    <div class="col-12">
+        <div class="card border-0 shadow">
+            <div class="card-body p-4">
+                <!-- Added needs-validation and novalidate for Bootstrap styling -->
+                <form asp-action="AddEdit" method="post" class="needs-validation" novalidate onsubmit="if(!this.checkValidity()){event.preventDefault();event.stopPropagation();}this.classList.add('was-validated');">
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="Sku" class="form-label">SKU (Stock Keeping Unit)</label>
+                        <input asp-for="Sku" class="form-control" placeholder="e.g. WIDGET-001" required autofocus />
+                        <div class="invalid-feedback">SKU is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Product Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Product Name" required />
+                        <div class="invalid-feedback">Product Name is required.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="ReorderLevel" class="form-label">Reorder Level</label>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text bg-transparent text-muted"><i class="bi bi-hash"></i></span>
+                            <input asp-for="ReorderLevel" class="form-control border-start-0 ps-0" placeholder="0" min="0" required />
+                            <div class="invalid-feedback">Please enter a valid reorder level (0 or higher).</div>
+                        </div>
+                        <div class="form-text text-muted mt-1"><i class="bi bi-info-circle me-1"></i>You will be alerted when stock falls to or below this level.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Optional details..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-3 border-top mt-4">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-save me-1"></i> @(isCreate ? "Create Product" : "Save Changes")
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
