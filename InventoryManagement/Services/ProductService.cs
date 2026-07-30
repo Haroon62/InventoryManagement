@@ -53,6 +53,7 @@ public class ProductService : IProductService
         // EF Core translates this entire LINQ chain into a single SQL query:
         //   SELECT * FROM Products WHERE IsActive = 1 ORDER BY Name
         return await _context.Products
+            .AsNoTracking()
             .Where(p => p.IsActive)
             .OrderBy(p => p.Name)
             .ToListAsync();
@@ -207,7 +208,7 @@ public class ProductService : IProductService
     /// </summary>
     public async Task<PagedResult<Product>> SearchProductsAsync(string searchTerm, int page, int pageSize)
     {
-        var query = _context.Products.Where(p => p.IsActive);
+        var query = _context.Products.AsNoTracking().Where(p => p.IsActive);
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {

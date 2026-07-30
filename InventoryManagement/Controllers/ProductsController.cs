@@ -61,6 +61,7 @@ public class ProductsController : Controller
 
     // GET: /api/stock/{id}
     [HttpGet("/api/stock/{id}")]
+    [InventoryManagement.Filters.ApiKey]
     public async Task<IActionResult> GetStockApi(int id)
     {
         var product = await _productService.GetByIdAsync(id);

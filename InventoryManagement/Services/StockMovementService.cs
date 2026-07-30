@@ -115,6 +115,7 @@ public class StockMovementService : IStockMovementService
     public async Task<List<StockMovement>> GetMovementHistoryAsync(int productId)
     {
         return await _context.StockMovements
+            .AsNoTracking()
             .Where(sm => sm.ProductId == productId)
             .OrderByDescending(sm => sm.CreatedUtc)
             .Include(sm => sm.Product)
