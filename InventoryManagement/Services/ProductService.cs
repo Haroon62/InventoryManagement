@@ -205,31 +205,28 @@ public class ProductService : IProductService
     /// 
     /// Returns an empty list if the search term is empty/null.
     /// </summary>
-    public async Task<List<Product>> SearchProductsAsync(string searchTerm)
+    public async Task<PagedResult<Product>> SearchProductsAsync(string searchTerm, int page, int pageSize)
     {
-        // If search term is empty or null, return all active products.
-        // string.IsNullOrWhiteSpace handles: null, "", and "   " (just spaces).
-        if (string.IsNullOrWhiteSpace(searchTerm))
+        var query = _context.Products.Where(p => p.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            return await GetAllProductsAsync();
+            searchTerm = searchTerm.Trim();
+            query = query.Where(p => p.Sku.Contains(searchTerm) || p.Name.Contains(searchTerm));
         }
 
-        // Trim whitespace from both ends — "  widget  " becomes "widget"
-        searchTerm = searchTerm.Trim();
+        var totalCount = await query.CountAsync();
 
-        // Search by SKU or Name using Contains (translated to SQL LIKE '%term%').
-        //
-        // SQL: SELECT * FROM Products 
-        //      WHERE IsActive = 1 
-        //        AND (Sku LIKE '%term%' OR Name LIKE '%term%')
-        //      ORDER BY Name
-        //
-        // Note: SQL Server's default collation is case-insensitive,
-        // so "widget" matches "Widget" and "WIDGET" automatically.
-        return await _context.Products
-            .Where(p => p.IsActive
-                && (p.Sku.Contains(searchTerm) || p.Name.Contains(searchTerm)))
+        var products = await query
             .OrderBy(p => p.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<Product> 
+        { 
+            Items = products, 
+            TotalCount = totalCount 
+        };
     }
 }

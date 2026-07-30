@@ -43,5 +43,5 @@ public interface IProductService
     /// Searches products by SKU or Name (case-insensitive partial match).
     /// Returns only active products.
     /// </summary>
-    Task<List<Product>> SearchProductsAsync(string searchTerm);
+    Task<PagedResult<Product>> SearchProductsAsync(string searchTerm, int page, int pageSize);
 }

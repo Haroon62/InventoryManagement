@@ -24,14 +24,17 @@ public class ProductsController : Controller
 
     // GET: /Products
     // Allows searching via a query string: /Products?search=widget
-    public async Task<IActionResult> Index(string search)
+    public async Task<IActionResult> Index([FromQuery] string? search, [FromQuery] int page = 1)
     {
-        // 1. Call Service to get data
-        var products = await _productService.SearchProductsAsync(search);
+        int pageSize = 10;
+        if (page < 1) page = 1;
+
+        // 1. Call Service to get paginated data
+        var pagedResult = await _productService.SearchProductsAsync(search ?? "", page, pageSize);
         
         // 2. Map Domain Models to ViewModels
         var viewModels = new List<ProductListViewModel>();
-        foreach (var p in products)
+        foreach (var p in pagedResult.Items)
         {
             viewModels.Add(new ProductListViewModel
             {
@@ -43,12 +46,20 @@ public class ProductsController : Controller
             });
         }
 
-        // Pass the search term back to the view so the search box stays populated
-        ViewData["SearchTerm"] = search;
+        var pagedViewModel = new PagedViewModel<ProductListViewModel>
+        {
+            Items = viewModels,
+            TotalCount = pagedResult.TotalCount,
+            CurrentPage = page,
+            PageSize = pageSize,
+            SearchTerm = search
+        };
 
         // 3. Return View
-        return View(viewModels);
+        return View(pagedViewModel);
     }
+
+
 
     // GET: /Products/Details/5
     public async Task<IActionResult> Details(int id)
@@ -125,7 +136,7 @@ public class ProductsController : Controller
             }
             else
             {
-                ModelState.AddModelError("Sku", result.ErrorMessage!);
+                ModelState.AddModelError(string.Empty, result.ErrorMessage!);
                 return View(viewModel);
             }
         }
@@ -152,7 +163,7 @@ public class ProductsController : Controller
             }
             else
             {
-                ModelState.AddModelError("Sku", result.ErrorMessage!);
+                ModelState.AddModelError(string.Empty, result.ErrorMessage!);
                 return View(viewModel);
             }
         }
@@ -181,32 +192,30 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddMovement([Bind(Prefix = "NewMovement")] MovementFormViewModel viewModel)
     {
-        // If basic form validation fails, we redirect back to Details.
-        // We use TempData to pass the error message across the redirect.
+        bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+
         if (!ModelState.IsValid)
         {
+            if (isAjax) return Json(new { success = false, message = "Please ensure all fields are filled out correctly (Quantity > 0)." });
+            
             TempData["ErrorMessage"] = "Please ensure all fields are filled out correctly (Quantity > 0).";
             return RedirectToAction(nameof(Details), new { id = viewModel.ProductId });
         }
 
         var movement = viewModel.ToStockMovementModel();
-        
-        // Call the service — THIS IS WHERE THE KEY RULE IS ENFORCED
         var result = await _stockMovementService.AddMovementAsync(movement);
 
         if (result.Success)
         {
             TempData["SuccessMessage"] = "Stock movement recorded successfully.";
+            if (isAjax) return Json(new { success = true });
         }
         else
         {
-            // The service rejected it (e.g., tried to take out more than is in stock).
-            // This satisfies the assignment requirement: "Reject it with a clear message 
-            // that tells the user how much is actually available."
             TempData["ErrorMessage"] = result.ErrorMessage;
+            if (isAjax) return Json(new { success = false, message = result.ErrorMessage });
         }
 
-        // Always redirect back to the product details page so they can see the updated stock
         return RedirectToAction(nameof(Details), new { id = viewModel.ProductId });
     }
 }

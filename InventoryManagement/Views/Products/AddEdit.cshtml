@@ -18,20 +18,26 @@
     <div class="col-12">
         <div class="card border-0 shadow">
             <div class="card-body p-4">
-                <!-- Added needs-validation and novalidate for Bootstrap styling -->
-                <form asp-action="AddEdit" method="post" class="needs-validation" novalidate onsubmit="if(!this.checkValidity()){event.preventDefault();event.stopPropagation();}this.classList.add('was-validated');">
+                <!-- Removed needs-validation and novalidate to use native browser validation -->
+                <form asp-action="AddEdit" method="post">
                     <input type="hidden" asp-for="Id" />
+                    
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger shadow-sm border-0 d-flex align-items-center mb-4" role="alert">
+                            <i class="bi bi-exclamation-octagon-fill fs-4 me-3"></i>
+                            <div asp-validation-summary="ModelOnly" class="mb-0"></div>
+                        </div>
+                    }
                     
                     <div class="mb-3">
                         <label asp-for="Sku" class="form-label">SKU (Stock Keeping Unit)</label>
                         <input asp-for="Sku" class="form-control" placeholder="e.g. WIDGET-001" required autofocus />
-                        <div class="invalid-feedback">SKU is required.</div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Name" class="form-label">Product Name</label>
                         <input asp-for="Name" class="form-control" placeholder="Product Name" required />
-                        <div class="invalid-feedback">Product Name is required.</div>
                     </div>
                     
                     <div class="mb-3">
@@ -39,7 +45,6 @@
                         <div class="input-group has-validation">
                             <span class="input-group-text bg-transparent text-muted"><i class="bi bi-hash"></i></span>
                             <input asp-for="ReorderLevel" class="form-control border-start-0 ps-0" placeholder="0" min="0" required />
-                            <div class="invalid-feedback">Please enter a valid reorder level (0 or higher).</div>
                         </div>
                         <div class="form-text text-muted mt-1"><i class="bi bi-info-circle me-1"></i>You will be alerted when stock falls to or below this level.</div>
                     </div>

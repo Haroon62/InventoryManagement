@@ -1,7 +1,7 @@
 # Inventory Management System
 
 ## 📖 Project Overview
-The Inventory Management System is a robust web application built with ASP.NET Core MVC. It allows users to track product catalogs, monitor current stock levels, and record stock movements (In/Out) with strict business rules to prevent data anomalies. This project demonstrates foundational concepts of modern C# web development, including N-Tier architecture, Dependency Injection, Entity Framework Core, and clean UI design.
+The Inventory Management System is a robust web application built with ASP.NET Core MVC. It allows users to track product catalogs, monitor current stock levels, and record stock movements (In/Out) with strict business rules to prevent data anomalies. This project demonstrates foundational concepts of modern C# web development, Dependency Injection, Entity Framework Core, and clean UI design.
 
 ## ✨ Features
 - **Product Management**: Create, read, update, and soft-delete products (SKU, Name, Description, Reorder Level).
@@ -27,7 +27,7 @@ The application follows a clean **N-Tier Architecture**:
 
 1. **Clone the repository**:
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/Haroon62/InventoryManagement.git
    cd InventoryManagement
    ```
 
@@ -45,7 +45,7 @@ The application follows a clean **N-Tier Architecture**:
    ```bash
    dotnet run --project InventoryManagement
    ```
-   The application will be accessible at `http://localhost:<port>` (usually `7273` or `5000`).
+   The application will be accessible at `http://localhost:7273`.
 
 ## 🗄️ Database Setup
 
