@@ -143,7 +143,7 @@ public class ProductsController : Controller
             if (result.Success)
             {
                 TempData["SuccessMessage"] = "Product created successfully.";
-                return Json(new { success = true, redirectUrl = Url.Action("Index") });
+                return Json(new { success = true, redirectUrl = Url.Action("Details", new { id = product.Id }) });
             }
             
             return Json(new { success = false, message = result.ErrorMessage });
@@ -167,7 +167,7 @@ public class ProductsController : Controller
             if (result.Success)
             {
                 TempData["SuccessMessage"] = "Product updated successfully.";
-                return Json(new { success = true, redirectUrl = Url.Action("Index") });
+                return Json(new { success = true, redirectUrl = Url.Action("Details", new { id = existingProduct.Id }) });
             }
             
             return Json(new { success = false, message = result.ErrorMessage });
