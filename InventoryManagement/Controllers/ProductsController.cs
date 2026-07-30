@@ -128,35 +128,33 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddEdit(ProductFormViewModel viewModel)
     {
+        // 1. Basic Form Validation
         if (!ModelState.IsValid)
         {
-            return View(viewModel);
+            return Json(new { success = false, message = "Please ensure all fields are correct." });
         }
 
         if (viewModel.Id == 0)
         {
-            // CREATE LOGIC
+            // ── CREATE NEW PRODUCT ──
             var product = viewModel.ToProductModel();
             var result = await _productService.CreateProductAsync(product);
 
             if (result.Success)
             {
                 TempData["SuccessMessage"] = "Product created successfully.";
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, redirectUrl = Url.Action("Index") });
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage!);
-                return View(viewModel);
-            }
+            
+            return Json(new { success = false, message = result.ErrorMessage });
         }
         else
         {
-            // EDIT LOGIC
+            // ── EDIT EXISTING PRODUCT ──
             var existingProduct = await _productService.GetByIdAsync(viewModel.Id);
             if (existingProduct == null || !existingProduct.IsActive)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Product not found." });
             }
 
             existingProduct.Sku = viewModel.Sku;
@@ -169,13 +167,10 @@ public class ProductsController : Controller
             if (result.Success)
             {
                 TempData["SuccessMessage"] = "Product updated successfully.";
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, redirectUrl = Url.Action("Index") });
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage!);
-                return View(viewModel);
-            }
+            
+            return Json(new { success = false, message = result.ErrorMessage });
         }
     }
 
@@ -202,14 +197,9 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddMovement([Bind(Prefix = "NewMovement")] MovementFormViewModel viewModel)
     {
-        bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
-
         if (!ModelState.IsValid)
         {
-            if (isAjax) return Json(new { success = false, message = "Please ensure all fields are filled out correctly (Quantity > 0)." });
-            
-            TempData["ErrorMessage"] = "Please ensure all fields are filled out correctly (Quantity > 0).";
-            return RedirectToAction(nameof(Details), new { id = viewModel.ProductId });
+            return Json(new { success = false, message = "Please ensure all fields are filled out correctly (Quantity > 0)." });
         }
 
         var movement = viewModel.ToStockMovementModel();
@@ -218,14 +208,9 @@ public class ProductsController : Controller
         if (result.Success)
         {
             TempData["SuccessMessage"] = "Stock movement recorded successfully.";
-            if (isAjax) return Json(new { success = true });
+            return Json(new { success = true });
         }
-        else
-        {
-            TempData["ErrorMessage"] = result.ErrorMessage;
-            if (isAjax) return Json(new { success = false, message = result.ErrorMessage });
-        }
-
-        return RedirectToAction(nameof(Details), new { id = viewModel.ProductId });
+        
+        return Json(new { success = false, message = result.ErrorMessage });
     }
 }

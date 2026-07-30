@@ -67,14 +67,14 @@
                                 <td class="text-muted">@item.ReorderLevel</td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary shadow-sm" title="View Details & Add Movement">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="View Details & Add Movement">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a asp-action="AddEdit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary shadow-sm" title="Edit Product">
+                                        <a asp-action="AddEdit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary shadow-sm px-2 py-1" title="Edit Product">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline delete-form">
-                                            <button type="button" class="btn btn-sm btn-outline-danger shadow-sm btn-delete" title="Delete Product">
+                                            <button type="button" class="btn btn-sm btn-outline-danger shadow-sm btn-delete px-2 py-1" title="Delete Product">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
